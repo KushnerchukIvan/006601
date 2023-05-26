@@ -1,0 +1,102 @@
+#include <iostream>
+#include <array>
+#include <Windows.h>
+
+using namespace std;
+
+class ChessBoard; // Попереднє оголошення класу ChessBoard
+
+class Display
+{
+private:
+    bool m_displayWhiteView;
+
+public:
+    Display(bool displayWhiteView = true)
+    {
+        m_displayWhiteView = displayWhiteView;
+    }
+
+    void displayChessBoard(const ChessBoard& board);
+};
+
+class ChessBoard
+{
+private:
+    array<array<char, 8>, 8> m_board;
+
+public:
+    ChessBoard()
+    {
+        // Ініціалізуємо дошку пустими значеннями
+        for (auto& row : m_board)
+        {
+            row.fill(' ');
+        }
+    }
+
+    // Робимо метод Display::displayChessBoard() другом класу ChessBoard
+    friend void Display::displayChessBoard(const ChessBoard& board);
+
+    // Метод для задання значень дошки
+    void setBoard(const array<array<char, 8>, 8>& board)
+    {
+        m_board = board;
+    }
+};
+
+void Display::displayChessBoard(const ChessBoard& board)
+{
+    if (m_displayWhiteView)
+    {
+        for (int row = 7; row >= 0; --row)
+        {
+            for (int col = 0; col < 8; ++col)
+            {
+                cout << board.m_board[row][col] << ' ';
+            }
+            cout << '\n';
+        }
+    }
+    else
+    {
+        for (int row = 0; row < 8; ++row)
+        {
+            for (int col = 7; col >= 0; --col)
+            {
+                cout << board.m_board[row][col] << ' ';
+            }
+            cout << '\n';
+        }
+    }
+}
+
+int main()
+{
+    SetConsoleCP(1251);
+    SetConsoleOutputCP(1251);
+    ChessBoard board;
+
+    array<array<char, 8>, 8> initialBoard = { {
+        { 'Т', 'К', 'С', 'Ф', 'Кр', 'С', 'К', 'Т' },
+        { 'п', 'п', 'п', 'п', 'п', 'п', 'п', 'п' },
+        { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+        { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+        { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+        { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+        { 'П', 'П', 'П', 'П', 'П', 'П', 'П', 'П' },
+        { 'т', 'к', 'с', 'ф', 'кр', 'с', 'к', 'т' }
+    } };
+    board.setBoard(initialBoard);
+
+    Display whiteView(true);
+    Display blackView(false);
+
+    cout << "Шахова дошка для гравцями білими:\n";
+    whiteView.displayChessBoard(board);
+
+    cout << "\nШахова дошка для гравцями чорними:\n";
+    blackView.displayChessBoard(board);
+
+    return 0;
+}
